@@ -2,7 +2,6 @@ pragma solidity ^0.4.24;
 // pragma experimental ABIEncoderV2;
 
 contract Expire {
-    
     uint256 betShelfLife;
     
     modifier notExpired() {
@@ -69,7 +68,7 @@ contract CoinToss is Expire {
         
     }
     
-    function setBet(uint amount) private onlyFlipper {
+    function setBet(uint amount) internal onlyFlipper {
         betAmount = amount;
     }
     
@@ -117,7 +116,7 @@ contract CoinToss is Expire {
     }
     
     // fallback function
-    function() public payable {
+    function() external payable {
         //sample fallback
         }
 }
