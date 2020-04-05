@@ -1,7 +1,22 @@
 pragma solidity ^0.4.24;
 // pragma experimental ABIEncoderV2;
 
-contract CoinToss{
+contract Expire {
+    
+    uint256 betShelfLife;
+    
+    modifier notExpired() {
+        require(now < betShelfLife);
+        _;
+    }
+    
+    modifier expiredBet() {
+        require(now >= betShelfLife, "Cannot withdraw when contract has not expired");
+        _;
+    }
+}
+
+contract CoinToss is Expire {
     
     struct Player {
         address addr;
@@ -18,7 +33,6 @@ contract CoinToss{
     Player[2] private players;  // only 2 players
     uint8 count = 0;
     string winner = "";
-    uint256 betShelfLife;
 
     constructor() public {}
     
@@ -89,8 +103,7 @@ contract CoinToss{
         
     }
     
-    function withdrawBet() public payable{
-        require(now >= betShelfLife, "Cannot withdraw when contract has not expired");
+    function withdrawBet() public payable expiredBet {
         require(msg.sender != flipper.addr);
         
         msg.sender.transfer(address(this).balance);
@@ -100,11 +113,6 @@ contract CoinToss{
     
     modifier onlyFlipper () {
         require(msg.sender == flipper.addr);
-        _;
-    }
-    
-    modifier notExpired() {
-        require(now < betShelfLife);
         _;
     }
     
