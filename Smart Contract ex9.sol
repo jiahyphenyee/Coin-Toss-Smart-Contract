@@ -47,18 +47,29 @@ contract CoinToss{
         
         count ++;
         
+        log2(
+            bytes32(msg.value),
+            bytes32(uint256(msg.sender)),
+            bytes32(count)
+        );
+        
     }
     
-    function setBet(uint amount) private {
-        require(msg.sender == flipper.addr);
+    function setBet(uint amount) private onlyFlipper {
         betAmount = amount;
     }
     
-    function flipCoin () payable external onlyFlipper{
+    function flipCoin () public payable onlyFlipper notExpired{
         require (better.addr != address(0), "A better is required");
         
         uint flip = flipper.number%2;
         uint bet = better.number%2;
+        
+        log2 (
+            bytes32(address(this).balance),
+            bytes32(flip),
+            bytes32(bet)
+        );
         
         if (flip == bet) {
             // better wins
@@ -69,6 +80,7 @@ contract CoinToss{
             flipper.addr.transfer(address(this).balance);
             winner = "flipper wins";
         }
+        
         
         emit showWinner(winner);
         count = 0;
